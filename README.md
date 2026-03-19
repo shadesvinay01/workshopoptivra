@@ -138,7 +138,7 @@ Real-time tracking dashboard
 ✅ Money-Back Guarantee - 7-day refund policy
 
 📞 Contact & Support
-Email: hello@optivra.com
+Email: hello@optivra.in
 
 Telegram: t.me/optivra
 
