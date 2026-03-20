@@ -179,6 +179,45 @@ Register for workshop and select "Yes" in Ambassador interest. We'll send detail
 — Priya Nair, Marketing Professional
 
 
+---
+
+## 🚀 Deployment Instructions
+
+### 1. TagMango CTA Link
+To make the "Claim Your Spot" button active, you must update the placeholder link in `index.html`.
+1. Open `index.html`.
+2. Search for the text `[INSERT TAGNONGO LINK HERE]`.
+3. Replace it with your actual TagMango masterclass link (e.g., `https://tagmango.com/your-masterclass`).
+
+### 2. Student Ambassador Backend (Google Apps Script)
+To capture referrals to your email (`rohitashgoyal509@gmail.com`), you need to deploy the Apps Script logic.
+
+#### Steps to Deploy:
+1. Go to [script.google.com](https://script.google.com) and create a **New Project**.
+2. Delete the default `function myFunction() {}` and paste the following code exactly as is:
+
+```javascript
+function doPost(e) {
+  var data = e.parameter;
+  var emailBody = "New Ambassador Request:\n\nName: " + data.name + "\nEmail: " + data.email + "\nReferrals: " + data.referral;
+  MailApp.sendEmail("rohitashgoyal509@gmail.com", "New Community Entry", emailBody);
+  return ContentService.createTextOutput("Success");
+}
+```
+
+3. Click **Deploy > New deployment**.
+4. Select **Web app** as the deployment type.
+5. Set "Execute as" to **Me (rohitashgoyal509@gmail.com)**.
+6. Set "Who has access" to **Anyone**.
+7. Click **Deploy** and complete the Google authorization steps.
+8. Copy the **Web app URL** generated at the end.
+
+#### Link the Script to the Website:
+1. Open `assets/js/script.js`.
+2. Find the line: `const scriptURL = '[INSERT_GOOGLE_SCRIPT_URL_HERE]';` (around line 77).
+3. Replace the placeholder with the Web app URL you copied in the previous steps.
+
+---
 
 📝 License
 © 2024 Optivra Consultancy. All rights reserved.
