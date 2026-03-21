@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- GOOGLE APPS SCRIPT ENDPOINT ----
     // IMPORTANT: The URL must end in "/exec". A URL with "/library/" is incorrect.
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDZFM4HISHLg2i9CjTlktfD-GK8zoaFQxAe4FoUig_bwyz1jQwul0eVvOqjn0UfNIoOg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-5clN15b9FiIlllWZ7DpXDJ8Wx-g4ho8Anogk4rVikEa-l6qucJSRCkKm-LHsyjM4DQ/exec';
 
     function postToScript(payload, onSuccess, onError, btn, originalText) {
         if (SCRIPT_URL.includes('INSERT') || SCRIPT_URL.includes('library')) {
