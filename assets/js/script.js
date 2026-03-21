@@ -181,17 +181,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ---- GOOGLE APPS SCRIPT ENDPOINT ----
-    const SCRIPT_URL = '[https://script.google.com/macros/s/AKfycbyDZFM4HISHLg2i9CjTlktfD-GK8zoaFQxAe4FoUig_bwyz1jQwul0eVvOqjn0UfNIoOg/exec]';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDZFM4HISHLg2i9CjTlktfD-GK8zoaFQxAe4FoUig_bwyz1jQwul0eVvOqjn0UfNIoOg/exec';
 
     function postToScript(payload, onSuccess, onError, btn, originalText) {
         if (SCRIPT_URL.includes('INSERT')) {
             setTimeout(() => { onSuccess(); btn.textContent = originalText; btn.disabled = false; }, 900);
             return;
         }
+        // Google Apps Script requires form-encoded body (not JSON) for CORS requests from browsers.
+        // We send the JSON string as a form field value, and the script reads it via e.postData.contents.
+        const formData = new URLSearchParams();
+        formData.append('data', JSON.stringify(payload));
         fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: formData
         })
             .then(r => r.json())
             .then(data => { if (data.status === 'success') onSuccess(); else onError(data.message || 'Error'); })
