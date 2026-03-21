@@ -11,6 +11,11 @@
  * 7. Who has access: Anyone
  * 8. Click Deploy, authorize permissions, then copy the Web App URL
  * 9. In assets/js/script.js, replace [INSERT_GOOGLE_APPS_SCRIPT_URL_HERE] with the URL
+ *
+ * WHAT THIS SCRIPT DOES:
+ * - Logs all Referral Registrations and Campus Ambassador Applications to a Google Sheet
+ * - Sends an email alert to hello@optivra.in for every submission
+ * - Sends an auto-confirmation email to the student who submitted
  */
 
 // --- CONFIGURATION ---
@@ -112,6 +117,9 @@ ACTION: Track referral count for ₹199 refund milestones
         subject: `🔗 New Referral Registration — ${data.name}`,
         body: emailBody
     });
+
+    // Send confirmation to the student
+    sendStudentConfirmation(data.email, data.name, 'referral');
 }
 
 /**
@@ -164,6 +172,110 @@ Target: 100 Elite Campus Ambassadors — ₹1 Lakh Earning Goal
         subject: `👑 New Campus Ambassador Application — ${data.name} (${data.college || 'Unknown College'})`,
         body: emailBody
     });
+
+    // Send confirmation to the student
+    sendStudentConfirmation(data.email, data.name, 'ambassador');
+}
+
+/**
+ * Send an auto-confirmation email back to the student
+ */
+function sendStudentConfirmation(studentEmail, studentName, formType) {
+    let subject = '';
+    let body = '';
+
+    if (formType === 'referral') {
+        subject = 'You\'re registered! Your referral code is on its way — Optivra AI Academy';
+        body = `
+Dear ${studentName},
+
+Thank you for registering with Optivra AI Academy! 🎉
+
+We've received your referral registration. Here's what happens next:
+
+✅ WHAT'S NEXT
+───────────────────────────────────────────────────────
+1. We will generate YOUR unique referral code within 24 hours
+2. You'll receive it in a separate email — just share it with friends
+3. Every friend who joins using your code earns you ₹20 cashback
+4. Hit 10 referrals → Full ₹199 refund + Campus Ambassador invitation!
+
+📋 REFERRAL REWARD TIERS
+───────────────────────────────────────────────────────
+🏅 3 Referrals = ₹100 Total (₹60 cashback + ₹40 bonus + AI Templates)
+🚀 5 Referrals = ₹150 Total (₹100 cashback + ₹50 bonus + Priority Access)
+👑 10 Referrals = ₹199 Refund + Ambassador Status + 20–50% Commission
+
+📞 Need help? Reach us at:
+📧 hello@optivra.in
+📞 +91 74390-71619
+
+See you at the masterclass on 29 March at 10:00 AM IST!
+
+Best regards,
+Rohitash & Sarveshwar
+Optivra AI Academy
+
+---
+Optivra AI Academy · Agentic AI · MLOps · Student Wealth Creation
+        `;
+    } else if (formType === 'ambassador') {
+        subject = 'Ambassador Application Received! We\'ll be in touch — Optivra AI Academy';
+        body = `
+Dear ${studentName},
+
+Thank you for applying to become an Optivra Campus Ambassador! 👑
+
+We are thrilled by your interest. Your application has been received and our team will review it carefully.
+
+✅ WHAT HAPPENS NEXT
+───────────────────────────────────────────────────────
+1. Our team will review your application within 24 hours
+2. If selected, you will receive a welcome email with your Ambassador Kit
+3. You'll get your unique referral link and commission dashboard access
+4. Start earning: 20–50% commission on every registration via your link
+
+💰 AMBASSADOR BENEFITS
+───────────────────────────────────────────────────────
+✔ 20–50% commission per registration you drive
+✔ Official Optivra Certificate of Ambassadorship
+✔ Internship opportunity & resume credibility
+✔ Direct mentorship from Rohitash Goyal & Sarveshwar Mandal
+✔ Access to the Elite Ambassador Community
+
+📞 Questions? Contact us:
+📧 hello@optivra.in
+📞 +91 74390-71619
+
+We look forward to building the AI generation together!
+
+Best regards,
+Rohitash & Sarveshwar
+Optivra AI Academy
+
+---
+Optivra AI Academy · Agentic AI · MLOps · Student Wealth Creation
+        `;
+    }
+
+    try {
+        MailApp.sendEmail({
+            to: studentEmail,
+            subject: subject,
+            body: body
+        });
+    } catch (error) {
+        Logger.log('Error sending confirmation email: ' + error.toString());
+    }
+}
+
+/**
+ * GET handler — returns a simple status page (useful for verifying the script is live)
+ */
+function doGet() {
+    return ContentService
+        .createTextOutput(JSON.stringify({ status: 'ok', app: 'Optivra AI Academy', version: '2.0' }))
+        .setMimeType(ContentService.MimeType.JSON);
 }
 
 /**

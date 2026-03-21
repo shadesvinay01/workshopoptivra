@@ -59,16 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTimer();
 
     // 5. TESTIMONIALS CAROUSEL — Infinite circular loop
-    const carousel    = document.getElementById('testimonialsCarousel');
-    const dotsWrap    = document.getElementById('carouselDots');
-    let currentIndex  = 0;
+    const carousel = document.getElementById('testimonialsCarousel');
+    const dotsWrap = document.getElementById('carouselDots');
+    let currentIndex = 0;
     let autoplayTimer = null;
-    let isDragging    = false;
-    let dragStartX    = 0;
+    let isDragging = false;
+    let dragStartX = 0;
 
     if (carousel && dotsWrap) {
         const origCards = Array.from(carousel.querySelectorAll('.testimonial-card'));
-        const total     = origCards.length;
+        const total = origCards.length;
 
         // Clone all cards and append for infinite effect
         origCards.forEach(card => {
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const allCards = carousel.querySelectorAll('.testimonial-card');
             if (!allCards[0]) return 382;
             const style = window.getComputedStyle(carousel);
-            const gap   = parseInt(style.gap) || 22;
+            const gap = parseInt(style.gap) || 22;
             return allCards[0].offsetWidth + gap;
         }
 
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function next() {
             currentIndex++;
             carousel.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
-            carousel.style.transform  = `translateX(-${currentIndex * getCardWidth()}px)`;
+            carousel.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
             updateDots(currentIndex % total);
 
             // When we reach the cloned set, silently reset to original
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const delta = dragStartX - e.clientX;
             const offset = currentIndex * getCardWidth() + delta;
             carousel.style.transition = 'none';
-            carousel.style.transform  = `translateX(-${offset}px)`;
+            carousel.style.transform = `translateX(-${offset}px)`;
         });
 
         window.addEventListener('mouseup', e => {
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ---- GOOGLE APPS SCRIPT ENDPOINT ----
-    const SCRIPT_URL = '[INSERT_GOOGLE_APPS_SCRIPT_URL_HERE]';
+    const SCRIPT_URL = '[https://script.google.com/macros/s/AKfycbyDZFM4HISHLg2i9CjTlktfD-GK8zoaFQxAe4FoUig_bwyz1jQwul0eVvOqjn0UfNIoOg/exec]';
 
     function postToScript(payload, onSuccess, onError, btn, originalText) {
         if (SCRIPT_URL.includes('INSERT')) {
@@ -193,16 +193,16 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-        .then(r => r.json())
-        .then(data => { if (data.status === 'success') onSuccess(); else onError(data.message || 'Error'); })
-        .catch(() => onError('Network error. Please try again.'))
-        .finally(() => { btn.textContent = originalText; btn.disabled = false; });
+            .then(r => r.json())
+            .then(data => { if (data.status === 'success') onSuccess(); else onError(data.message || 'Error'); })
+            .catch(() => onError('Network error. Please try again.'))
+            .finally(() => { btn.textContent = originalText; btn.disabled = false; });
     }
 
     // 6. REFERRAL FORM
     const referralForm = document.getElementById('referralForm');
     if (referralForm) {
-        referralForm.addEventListener('submit', function(e) {
+        referralForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const btn = document.getElementById('refSubmitBtn');
             const msg = document.getElementById('referralMessage');
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 7. AMBASSADOR FORM
     const ambassadorForm = document.getElementById('ambassadorForm');
     if (ambassadorForm) {
-        ambassadorForm.addEventListener('submit', function(e) {
+        ambassadorForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const btn = document.getElementById('ambSubmitBtn');
             const msg = document.getElementById('ambassadorMessage');
