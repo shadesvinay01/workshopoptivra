@@ -184,26 +184,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // IMPORTANT: The URL must end in "/exec". A URL with "/library/" is incorrect.
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-5clN15b9FiIlllWZ7DpXDJ8Wx-g4ho8Anogk4rVikEa-l6qucJSRCkKm-LHsyjM4DQ/exec';
 
-    function postToScript(payload, onSuccess, onError, btn, originalText) {
+    async function postToScript(payload, onSuccess, onError, btn, originalText) {
         if (SCRIPT_URL.includes('INSERT') || SCRIPT_URL.includes('library')) {
             onError('Invalid Script URL. Make sure you copied the Web App URL ending in /exec');
             setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 2000);
             return;
         }
 
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors', // Essential for Google Apps Script to prevent CORS errors
-            headers: { 'Content-Type': 'text/plain' }, // Prevents preflight OPTIONS request
-            body: JSON.stringify(payload)
-        })
-            .then(() => {
-                // With 'no-cors', the response is opaque (we can't read the JSON).
-                // If it reaches here without throwing a network error, it succeeded.
-                onSuccess();
-            })
-            .catch(() => onError('Network error. Please try again.'))
-            .finally(() => { btn.textContent = originalText; btn.disabled = false; });
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            // With no-cors, we don't get a readable response. If fetch didn't throw, it dispatched.
+            onSuccess();
+
+        } catch (error) {
+            console.error('Fetch error:', error);
+            // Print the ACTUAL error to the screen so we can see why it's failing
+            onError('Error: ' + (error.message || error.toString()));
+        } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
     }
 
     // 6. REFERRAL FORM
