@@ -59,7 +59,7 @@ function getOrCreateSheet() {
 
     if (!sheet) {
         sheet = ss.insertSheet(CONFIG.sheetName);
-        const headers = ['Timestamp', 'Type', 'Name', 'Email', 'Phone', 'College', 'Referred By', 'Motivation', 'Status'];
+        const headers = ['Timestamp', 'Type', 'Name', 'Email', 'Phone', 'College', 'Referred By', 'Motivation', 'Status', 'Referral Code'];
         sheet.appendRow(headers);
 
         // Style the header
@@ -79,16 +79,22 @@ function getOrCreateSheet() {
 function handleReferral(sheet, data) {
     const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
+    // Auto-generate Referral Code: First 4 letters of name (uppercase) + '10'
+    const nameStr = (data.name || '').replace(/[^a-zA-Z]/g, '');
+    const refPrefix = nameStr.length > 0 ? nameStr.substring(0, 4).toUpperCase() : 'OPTV';
+    const referralCode = refPrefix + '10';
+
     sheet.appendRow([
         new Date(),
         'Referral',
         data.name || '',
         data.email || '',
         data.phone || '',
-        '',
+        data.college || '',
         data.referredBy || 'Direct',
-        '',
-        'New'
+        data.wantsAmbassador ? 'Requested' : 'No',
+        'New',
+        referralCode
     ]);
 
     const emailBody = `
@@ -101,7 +107,10 @@ NEW REFERRAL REGISTRATION — OPTIVRA AI ACADEMY
 Name:          ${data.name}
 Email:         ${data.email}
 Phone:         ${data.phone || 'Not provided'}
+College:       ${data.college || 'Not provided'}
 Referred By:   ${data.referredBy || 'Direct (no referrer)'}
+Ambassador:    ${data.wantsAmbassador ? 'YES - Wants to be considered' : 'NO'}
+Referral Code: ${referralCode}
 
 ⏰ SUBMITTED AT
 ───────────────────────────────────────────────────────
@@ -114,149 +123,69 @@ ACTION: Track referral count for ₹199 refund milestones
 
     MailApp.sendEmail({
         to: CONFIG.recipientEmail,
-        subject: `🔗 New Referral Registration — ${data.name}`,
+        subject: `🔗 New Referral Registration — ${data.name} (${referralCode})`,
         body: emailBody
     });
 
     // Send confirmation to the student
-    sendStudentConfirmation(data.email, data.name, 'referral');
-}
-
-/**
- * Handle Campus Ambassador Application
- */
-function handleAmbassador(sheet, data) {
-    const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-
-    sheet.appendRow([
-        new Date(),
-        'Campus Ambassador',
-        data.name || '',
-        data.email || '',
-        data.phone || '',
-        data.college || '',
-        data.referredBy || 'Direct',
-        data.motivation || '',
-        'New'
-    ]);
-
-    const emailBody = `
-═══════════════════════════════════════════════════════
-NEW CAMPUS AMBASSADOR APPLICATION — OPTIVRA AI ACADEMY
-═══════════════════════════════════════════════════════
-
-👑 APPLICANT INFORMATION
-───────────────────────────────────────────────────────
-Name:          ${data.name}
-Email:         ${data.email}
-Phone:         ${data.phone || 'Not provided'}
-College:       ${data.college || 'Not provided'}
-Referred By:   ${data.referredBy || 'Direct'}
-
-💬 WHY THEY WANT TO BE AMBASSADOR
-───────────────────────────────────────────────────────
-${data.motivation || 'No message provided'}
-
-⏰ SUBMITTED AT
-───────────────────────────────────────────────────────
-${timestamp} IST
-
-═══════════════════════════════════════════════════════
-ACTION: Review and respond within 24 hours
-Target: 100 Elite Campus Ambassadors — ₹1 Lakh Earning Goal
-═══════════════════════════════════════════════════════
-    `;
-
-    MailApp.sendEmail({
-        to: CONFIG.recipientEmail,
-        subject: `👑 New Campus Ambassador Application — ${data.name} (${data.college || 'Unknown College'})`,
-        body: emailBody
-    });
-
-    // Send confirmation to the student
-    sendStudentConfirmation(data.email, data.name, 'ambassador');
+    sendStudentConfirmation(data.email, data.name, data.wantsAmbassador, referralCode);
 }
 
 /**
  * Send an auto-confirmation email back to the student
  */
-function sendStudentConfirmation(studentEmail, studentName, formType) {
-    let subject = '';
-    let body = '';
+function sendStudentConfirmation(studentEmail, studentName, wantsAmbassador=false, referralCode='') {
+    const ambassadorText = wantsAmbassador 
+        ? "👑 NOTE: You have opted to become a Campus Ambassador! As soon as you complete 10 referrals, you will be upgraded to Campus Ambassador. Don't worry, you will receive an email for each referral who successfully joins using your link!"
+        : "You opted out of the campus ambassador program. Register for the workshop masterclass here: https://tagmango.com/web/checkout/69b97920f4158f62333fca2c";
 
-    if (formType === 'referral') {
-        subject = 'You\'re registered! Your referral code is on its way — Optivra AI Academy';
-        body = `
+    const subject = 'You\'re registered! Your Referral Code is inside — Optivra AI Academy';
+    const body = `
 Dear ${studentName},
 
 Thank you for registering with Optivra AI Academy! 🎉
 
-We've received your referral registration. Here's what happens next:
+We've received your referral registration. Your unique Referral Code is instantly generated and active!
+
+🔑 YOUR REFERRAL CODE: ${referralCode}
 
 ✅ WHAT'S NEXT
 ───────────────────────────────────────────────────────
-1. We will generate YOUR unique referral code within 24 hours
-2. You'll receive it in a separate email — just share it with friends
+1. Share your Referral Code with friends
+2. They use this code while registering on TagMango to get 10% off
 3. Every friend who joins using your code earns you ₹20 cashback
 4. Hit 10 referrals → Full ₹199 refund + Campus Ambassador invitation!
+
+📱 READY-TO-SEND WHATSAPP / INSTAGRAM MESSAGE
+───────────────────────────────────────────────────────
+Copy and paste this message to your friends or college groups:
+
+"Hey! I'm attending the Optivra AI Academy Masterclass by IBM & Morgan Stanley Engineers on 29 March. They're teaching how to build AI agents and make money through MLOps. 
+You can join too! Use my referral code: ${referralCode} to get 10% off the ticket at checkout.
+Register here: https://tagmango.com/web/checkout/69b97920f4158f62333fca2c"
+───────────────────────────────────────────────────────
 
 📋 REFERRAL REWARD TIERS
 ───────────────────────────────────────────────────────
 🏅 3 Referrals = ₹100 Total (₹60 cashback + ₹40 bonus + AI Templates)
 🚀 5 Referrals = ₹150 Total (₹100 cashback + ₹50 bonus + Priority Access)
-👑 10 Referrals = ₹199 Refund + Ambassador Status + 20–50% Commission
+👑 10 Referrals = ₹199 Refund + Ambassador Status + 10–30% Commission
+
+${ambassadorText}
 
 📞 Need help? Reach us at:
 📧 hello@optivra.in
-📞 +91 74390-71619
+📞 +91 6280179738
+📞 +91 7439071619
 
 See you at the masterclass on 29 March at 10:00 AM IST!
 
-Best regards,
-Rohitash & Sarveshwar
+Best Regards,
 Optivra AI Academy
 
 ---
 Optivra AI Academy · Agentic AI · MLOps · Student Wealth Creation
-        `;
-    } else if (formType === 'ambassador') {
-        subject = 'Ambassador Application Received! We\'ll be in touch — Optivra AI Academy';
-        body = `
-Dear ${studentName},
-
-Thank you for applying to become an Optivra Campus Ambassador! 👑
-
-We are thrilled by your interest. Your application has been received and our team will review it carefully.
-
-✅ WHAT HAPPENS NEXT
-───────────────────────────────────────────────────────
-1. Our team will review your application within 24 hours
-2. If selected, you will receive a welcome email with your Ambassador Kit
-3. You'll get your unique referral link and commission dashboard access
-4. Start earning: 20–50% commission on every registration via your link
-
-💰 AMBASSADOR BENEFITS
-───────────────────────────────────────────────────────
-✔ 20–50% commission per registration you drive
-✔ Official Optivra Certificate of Ambassadorship
-✔ Internship opportunity & resume credibility
-✔ Direct mentorship from Rohitash Goyal & Sarveshwar Mandal
-✔ Access to the Elite Ambassador Community
-
-📞 Questions? Contact us:
-📧 hello@optivra.in
-📞 +91 74390-71619
-
-We look forward to building the AI generation together!
-
-Best regards,
-Rohitash & Sarveshwar
-Optivra AI Academy
-
----
-Optivra AI Academy · Agentic AI · MLOps · Student Wealth Creation
-        `;
-    }
+    `;
 
     try {
         MailApp.sendEmail({

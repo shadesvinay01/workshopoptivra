@@ -223,28 +223,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const msg = document.getElementById('referralMessage');
             const orig = btn.textContent;
             btn.textContent = 'Submitting...'; btn.disabled = true; msg.textContent = '';
-            postToScript(
-                { type: 'referral', name: document.getElementById('refName').value, email: document.getElementById('refEmail').value, phone: document.getElementById('refPhone').value || '', referredBy: document.getElementById('refReferrer').value || '', college: document.getElementById('refCollege').value || '' },
-                () => { msg.style.color = '#10b981'; msg.textContent = '✅ Registered! Your unique referral code will arrive by email shortly.'; referralForm.reset(); },
-                err => { msg.style.color = '#ef4444'; msg.textContent = '❌ ' + err; },
-                btn, orig
-            );
-        });
-    }
+            
+            const toggleEl = document.getElementById('refAmbassadorToggle');
+            const wantsAmb = toggleEl ? toggleEl.checked : false;
 
-    // 7. AMBASSADOR FORM
-    const ambassadorForm = document.getElementById('ambassadorForm');
-    if (ambassadorForm) {
-        ambassadorForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const btn = document.getElementById('ambSubmitBtn');
-            const msg = document.getElementById('ambassadorMessage');
-            const orig = btn.textContent;
-            btn.textContent = 'Submitting...'; btn.disabled = true; msg.textContent = '';
-            const motEl = document.getElementById('ambMotivation');
             postToScript(
-                { type: 'campus_ambassador', name: document.getElementById('ambName').value, email: document.getElementById('ambEmail').value, phone: document.getElementById('ambPhone').value || '', college: document.getElementById('ambCollege').value || '', motivation: motEl ? motEl.value : '', referredBy: document.getElementById('ambReferral').value || '' },
-                () => { msg.style.color = '#10b981'; msg.textContent = '✅ Application submitted! Welcome to the Elite 100! We will reach out within 24 hours.'; ambassadorForm.reset(); },
+                { 
+                    type: 'referral', 
+                    name: document.getElementById('refName').value, 
+                    email: document.getElementById('refEmail').value, 
+                    phone: document.getElementById('refPhone').value || '', 
+                    referredBy: document.getElementById('refReferrer').value || '', 
+                    college: document.getElementById('refCollege').value || '',
+                    wantsAmbassador: wantsAmb
+                },
+                () => { 
+                    msg.style.color = '#10b981'; 
+                    msg.textContent = '✅ Registered! Your confirmation will arrive by email shortly.'; 
+                    referralForm.reset(); 
+                },
                 err => { msg.style.color = '#ef4444'; msg.textContent = '❌ ' + err; },
                 btn, orig
             );

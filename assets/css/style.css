@@ -427,6 +427,33 @@ body {
     box-shadow: 0 16px 36px rgba(37,99,235,0.45);
 }
 
+/* CTA Secondary Button */
+.cta-btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: var(--white);
+    color: var(--dark);
+    padding: 16px 24px;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 16px;
+    text-decoration: none;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-sm);
+    letter-spacing: 0.01em;
+}
+
+.cta-btn-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
 /* Trust + Social proof */
 .trust-bar {
     display: flex;
@@ -1775,6 +1802,18 @@ body.dark-mode .form-group input:focus,
 body.dark-mode .form-group textarea:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+body.dark-mode .cta-btn-secondary {
+    background: #0f172a;
+    border-color: rgba(255,255,255,0.15);
+    color: #f1f5f9;
+}
+
+body.dark-mode .cta-btn-secondary:hover {
+    border-color: #60a5fa;
+    color: #60a5fa;
+    background: rgba(59,130,246,0.05);
 }
 
 /* =====================================================
