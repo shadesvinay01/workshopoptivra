@@ -181,20 +181,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ---- GOOGLE APPS SCRIPT ENDPOINT ----
-    const SCRIPT_URL = 'https://script.google.com/macros/library/d/1_zvxkJkGwEU3VXkZBxlKYBD1YUA_PZxKywjUAxTVAADyLT0M7qOQkAa-/2';
+    // IMPORTANT: The URL must end in "/exec". A URL with "/library/" is incorrect.
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDZFM4HISHLg2i9CjTlktfD-GK8zoaFQxAe4FoUig_bwyz1jQwul0eVvOqjn0UfNIoOg/exec';
 
     function postToScript(payload, onSuccess, onError, btn, originalText) {
-        if (SCRIPT_URL.includes('INSERT')) {
-            setTimeout(() => { onSuccess(); btn.textContent = originalText; btn.disabled = false; }, 900);
+        if (SCRIPT_URL.includes('INSERT') || SCRIPT_URL.includes('library')) {
+            onError('Invalid Script URL. Make sure you copied the Web App URL ending in /exec');
+            setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 2000);
             return;
         }
-        // Google Apps Script requires form-encoded body (not JSON) for CORS requests from browsers.
-        // We send the JSON string as a form field value, and the script reads it via e.postData.contents.
-        const formData = new URLSearchParams();
-        formData.append('data', JSON.stringify(payload));
+
         fetch(SCRIPT_URL, {
             method: 'POST',
-            body: formData
+            body: JSON.stringify(payload)
         })
             .then(r => r.json())
             .then(data => { if (data.status === 'success') onSuccess(); else onError(data.message || 'Error'); })

@@ -30,10 +30,7 @@ const CONFIG = {
 function doPost(e) {
     try {
         const sheet = getOrCreateSheet();
-        // When sent from browser as URLSearchParams, the JSON arrives in e.parameter.data.
-        // When called from test functions (raw JSON body), it arrives in e.postData.contents.
-        const rawJson = (e.parameter && e.parameter.data) ? e.parameter.data : e.postData.contents;
-        const data = JSON.parse(rawJson);
+        const data = JSON.parse(e.postData.contents);
 
         if (data.type === 'referral') {
             handleReferral(sheet, data);
