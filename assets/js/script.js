@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ---- GOOGLE APPS SCRIPT ENDPOINT ----
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDZFM4HISHLg2i9CjTlktfD-GK8zoaFQxAe4FoUig_bwyz1jQwul0eVvOqjn0UfNIoOg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/library/d/1_zvxkJkGwEU3VXkZBxlKYBD1YUA_PZxKywjUAxTVAADyLT0M7qOQkAa-/2';
 
     function postToScript(payload, onSuccess, onError, btn, originalText) {
         if (SCRIPT_URL.includes('INSERT')) {
