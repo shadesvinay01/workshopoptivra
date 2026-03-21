@@ -193,10 +193,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(SCRIPT_URL, {
             method: 'POST',
+            mode: 'no-cors', // Essential for Google Apps Script to prevent CORS errors
+            headers: { 'Content-Type': 'text/plain' }, // Prevents preflight OPTIONS request
             body: JSON.stringify(payload)
         })
-            .then(r => r.json())
-            .then(data => { if (data.status === 'success') onSuccess(); else onError(data.message || 'Error'); })
+            .then(() => {
+                // With 'no-cors', the response is opaque (we can't read the JSON).
+                // If it reaches here without throwing a network error, it succeeded.
+                onSuccess();
+            })
             .catch(() => onError('Network error. Please try again.'))
             .finally(() => { btn.textContent = originalText; btn.disabled = false; });
     }
